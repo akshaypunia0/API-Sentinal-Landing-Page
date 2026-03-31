@@ -1,5 +1,6 @@
 "use client";
 
+import { METHODS } from "http";
 import { useRef, useState, useEffect } from "react";
 
 function useInView(threshold = 0.1) {
@@ -163,7 +164,7 @@ function DashboardMockup() {
                 <span className="text-[12px] text-zinc-400">{api.interval}</span>
                 <StatusBadge status={api.status} />
                 <span className={`text-[12px] font-mono font-semibold ${api.status === "DOWN" ? "text-zinc-600" :
-                    api.status === "SLOW" ? "text-amber-400" : "text-emerald-400"
+                  api.status === "SLOW" ? "text-amber-400" : "text-emerald-400"
                   }`}>{api.ms}</span>
               </div>
             ))}
@@ -184,7 +185,7 @@ function DashboardMockup() {
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-800/60">
                   <span className="text-[11px] text-zinc-500">Every {api.interval}</span>
                   <span className={`text-[12px] font-mono font-bold ${api.status === "DOWN" ? "text-zinc-600" :
-                      api.status === "SLOW" ? "text-amber-400" : "text-emerald-400"
+                    api.status === "SLOW" ? "text-amber-400" : "text-emerald-400"
                     }`}>{api.ms}</span>
                 </div>
               </div>
@@ -294,12 +295,50 @@ export default function Home() {
     waitlistRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes("@")) { setError("Please enter a valid email."); return; }
-    setLoading(true); setError("");
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      e.preventDefault();
+
+      // RFC‑5322–ish but pragmatic email validation
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+      if (!emailPattern.test(email.trim())) {
+        setError("Please enter a valid work email address.");
+        return;
+      }
+
+      console.log("Email is: ", email);
+
+      console.log("Env variable: ", process.env.NEXT_PUBLIC_API_URL);
+      
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/waitlist`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({ email })
+        }
+      )
+
+      const data = await response.json()
+
+      if(!response.ok){
+        throw new Error(data.message || "Something went wrong")
+      }
+
+      setLoading(true);
+      setError("");
+
+      // TODO: replace mock delay with real API call
+      await new Promise((r) => setTimeout(r, 1200));
+      setLoading(false);
+      setSubmitted(true);
+      setEmail("");
+    } catch (error) {
+      console.log("error: Error adding to waitlist");
+    }
   };
 
   return (
@@ -646,7 +685,7 @@ export default function Home() {
                     <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M6 14l5 5 11-11" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   </div>
                   <h3 className="text-[20px] font-bold text-white mb-2">You're on the list! 🎉</h3>
-                  <p className="text-zinc-400 text-[14px]">We'll email you the moment API Sentinel launches. Early access = 3 months free.</p>
+                  <p className="text-zinc-400 text-[14px]">We'll email you the moment API Sentinel launches.</p>
                 </div>
               ) : (
                 <>
