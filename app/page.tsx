@@ -306,10 +306,6 @@ export default function Home() {
         setError("Please enter a valid work email address.");
         return;
       }
-
-      console.log("Email is: ", email);
-
-      console.log("Env variable: ", process.env.NEXT_PUBLIC_API_URL);
       
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/waitlist`,
