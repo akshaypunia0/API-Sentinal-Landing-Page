@@ -279,6 +279,7 @@ function ProblemDiagram() {
    MAIN PAGE
 ══════════════════════════════════════════ */
 export default function Home() {
+  const LINKEDIN_URL = "https://www.linkedin.com/in/akshay-punia/";
   const waitlistRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -333,7 +334,7 @@ export default function Home() {
       setLoading(false);
       setSubmitted(true);
       setEmail("");
-      toast.success(data.message || "Congratulations! You're on the list! 🎉")
+      toast.success("Congratulations! You're on the list! 🎉")
     } catch (error) {
       const message =
         error instanceof Error
@@ -692,6 +693,16 @@ export default function Home() {
                   </div>
                   <h3 className="text-[20px] font-bold text-white mb-2">You're on the list! 🎉</h3>
                   <p className="text-zinc-400 text-[14px]">We'll email you the moment API Sentinel launches.</p>
+                  <button
+                    type="button"
+                    onClick={() => window.open(LINKEDIN_URL, "_blank", "noopener,noreferrer")}
+                    className="mt-5 inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-zinc-700 bg-zinc-900/80 text-zinc-100 text-[13px] font-semibold hover:bg-zinc-800 transition-colors"
+                  >
+                    <svg className="w-4 h-4 text-[#0A66C2]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M4.98 3.5A2.48 2.48 0 1 0 5 8.46a2.48 2.48 0 0 0-.02-4.96ZM3 9h4v12H3V9Zm7 0h3.83v1.64h.06c.53-1 1.84-2.05 3.78-2.05C21.71 8.6 22 11.24 22 14.66V21h-4v-5.62c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z" />
+                    </svg>
+                    Follow the build journey
+                  </button>
                 </div>
               ) : (
                 <>
