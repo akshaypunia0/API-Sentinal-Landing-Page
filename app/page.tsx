@@ -1,7 +1,7 @@
 "use client";
 
-import { METHODS } from "http";
 import { useRef, useState, useEffect } from "react";
+import { toast } from "sonner"
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -295,6 +295,7 @@ export default function Home() {
     waitlistRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     try {
       e.preventDefault();
 
@@ -320,11 +321,11 @@ export default function Home() {
 
       const data = await response.json()
 
+      setLoading(true);
+
       if(!response.ok){
         throw new Error(data.message || "Something went wrong")
       }
-
-      setLoading(true);
       setError("");
 
       // TODO: replace mock delay with real API call
@@ -332,8 +333,17 @@ export default function Home() {
       setLoading(false);
       setSubmitted(true);
       setEmail("");
+      toast.success(data.message || "Congratulations! You're on the list! 🎉")
     } catch (error) {
-      console.log("error: Error adding to waitlist");
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong";
+
+      toast.error(message)
+      console.log("error: Error adding to waitlist", error);
+    } finally {
+      setLoading(false);
     }
   };
 
